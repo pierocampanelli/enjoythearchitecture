@@ -6,6 +6,7 @@ category: scm
 
 h1. The architecture of Bazaar distributed version control
 
+
 "Bazaar":http://bazaar.canonical.com/ is a version control system that helps you track project history over time and to collaborate easily with others. It is a distributed  in a sense that it allows to work in different ways: from disconnected-mode and decentralized to classic centralized mode. For a quick introduction of bazaar you can see the "wikipedia":http://en.wikipedia.org/wiki/Bazaar_(software) entry and the project home site.
 
 Bazaar has been developed in Python with a plugin architecture that allows easily to extend and it allows developers from different parts of the world to 
@@ -13,7 +14,7 @@ In this article I'll show an high-level architecture of Bazaar according mining 
 
 Bazaar architecture is highly modular based on the concept of Plugins. Functionalities can be extended adding plugins that can add new commands, user interfaces and so on. There are several (over 100) plugins that have been developed during years and that can be downloaded and added to a standard installation.
 
-!http://farm3.static.flickr.com/2030/1794243833_8b1d321441_d.jpg(architecture of bazaar)!
+"!http://farm6.static.flickr.com/5058/5488776058_d716fe5572_b_d.jpg(architecture of bazaar)!":http://farm6.static.flickr.com/5058/5488776058_d716fe5572_b_d.jpg
 
 In the above picture you can see a subset of the project's organization of Bazaar. Each box is a subproject. Central project is "bzrlib". It defines basic infrastructure, interfaces that can be exploited by other projects. Most of the projects depends from classes defined in "bzrlib" (To reduce cluttering I avoided to draw all dependency lines).
 

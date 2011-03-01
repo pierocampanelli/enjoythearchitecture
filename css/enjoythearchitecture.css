@@ -1,7 +1,8 @@
 body {
   background-color: white;
-  *font-size: medium;
   text-align: justify;
+  font: 13.34px helvetica, arial, clean, sans-serif;
+line-height: 1.5em;
 }
 
 #content {
@@ -17,13 +18,16 @@ body {
 .post p  {
 }
 
+.post h1 {
+	font-weight: bold;
+	font-size: 18px;
+}
 
 .post img {
     display: block;
     margin-left: auto;
     margin-right: auto;
-	width: 600px;
-	height: 400px;
+
  }
 
 #sidebar_block_menu {

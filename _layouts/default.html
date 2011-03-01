@@ -14,7 +14,6 @@
    <title>{{ page.title }}</title>
    <meta name="author" content="Piero Campanelli" />
    <!-- keywords? -->
-
    <!-- RSS -->
 <!--   <link href="http://feeds.feedburner.com/tom-preston-werner" rel="alternate" title="Tom Preston-Werner" type="application/atom+xml" /> -->
 
@@ -40,13 +39,18 @@
 	
 	<hr>
 
-  <div id="content" class="span-20">
+  <div id="content" class="span-18">
   	{{ content }}
+  </div>
+
+  <div id="span" class="span-2">
+    <p></p>
   </div>
 
   <div id="sidebar" class="span-4 last">	
 	{% include about.html %}
 	{% include menu.html %}
+	{% include icons.html %}
   </div>	
  
 
