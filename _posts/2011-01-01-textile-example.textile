@@ -6,40 +6,25 @@ category: scm
 
 h1. The architecture of Bazaar distributed version control
 
+!http://bazaar.canonical.com/bzricons/bazaar-logo.png!"Bazaar":http://bazaar.canonical.com/ is a version control system that helps you track project history over time and to collaborate easily with others. It is a distributed  in a sense that it allows to work in different ways: from disconnected-mode and decentralized to classic centralized mode. For a quick introduction of bazaar you can see the "wikipedia":http://en.wikipedia.org/wiki/Bazaar_(software) entry and the project home site. Bazaar has been developed in Python with an interesting plugin architecture that allows easily to be extended simplifying collaboration and management between developers across the world.
+Plugin is the central abstraction in Bazaar. Each plugin can add new server-side functionalities, new command line tools, new user interfaces and so on. There are several (over 100) components that have been developed during years and that can be downloaded and added to a standard installation. On project wiki you can find a list of most official implemented "plugins":http://wiki.bazaar.canonical.com/BzrPlugins.
 
-"Bazaar":http://bazaar.canonical.com/ is a version control system that helps you track project history over time and to collaborate easily with others. It is a distributed  in a sense that it allows to work in different ways: from disconnected-mode and decentralized to classic centralized mode. For a quick introduction of bazaar you can see the "wikipedia":http://en.wikipedia.org/wiki/Bazaar_(software) entry and the project home site.
 
-Bazaar has been developed in Python with a plugin architecture that allows easily to extend and it allows developers from different parts of the world to 
-In this article I'll show an high-level architecture of Bazaar according mining I made in the source code and in developer's documentation
+"!http://farm6.static.flickr.com/5058/5488776058_d716fe5572_b.jpg(architecture of bazaar)!":http://farm6.static.flickr.com/5058/5488776058_d716fe5572_b.jpg
 
-Bazaar architecture is highly modular based on the concept of Plugins. Functionalities can be extended adding plugins that can add new commands, user interfaces and so on. There are several (over 100) plugins that have been developed during years and that can be downloaded and added to a standard installation.
+In the above picture you can see a subset of the project's organization of Bazaar. Each box is a subproject. Central project is **bzrlib**. It defines basic infrastructure, classes and interfaces that can be exploited by other projects. Most of the projects depends from classes defined here. Digging into the code of bzrlib you can find a lot usage of Command design pattern and the concept of server "hooks":http://doc.bazaar.canonical.com/bzr.dev/en/user-guide/hooks.html. All projects depend from the **bzrlib** (__To reduce cluttering I drew only important dependency lines__).
 
-"!http://farm6.static.flickr.com/5058/5488776058_d716fe5572_b_d.jpg(architecture of bazaar)!":http://farm6.static.flickr.com/5058/5488776058_d716fe5572_b_d.jpg
+Every new features of Bazaar, from Graphical User Interface to command line, to utility has been modeled as an external project. For example **qbzr** is a cross-platform GUI front end for Bazaar, based on Qt toolkit. It provides GUI frontend for many core bzr commands and several universal dialogs and helper commands. Each cli bzr command has its equivalent on UI prefixed with "q". On top of **qbzr** other projects have been built. For example **qbzr-eclipse** links qis a plug-in for Eclipse that provides Bazaar version control support by using the QBzr Bazaar plug-in. 
 
-In the above picture you can see a subset of the project's organization of Bazaar. Each box is a subproject. Central project is "bzrlib". It defines basic infrastructure, interfaces that can be exploited by other projects. Most of the projects depends from classes defined in "bzrlib" (To reduce cluttering I avoided to draw all dependency lines).
+I tried to divide some of the most important projects in functional areas:
 
-At core is the BZRLIB project. It is a python project which contains core project. Particular effort has been put in the plugin architecture which allows easily. In particular Command and Hook concept has been explored.
-Basically you can extend the project adding plugins to BZRLIB. In particular you can add new commands, new GUI tools, ....
+* **Commands / Functionalities**: add new commands and utilities to Bazaar
+* **GUI**: add a user interfaces using a flavor of UI Toolkits, 
+* **IDE Tools**: projects that add IDE integration
+* **Support**: projects regarding installers, books, documentations, website and so on
 
-I tried to divide projects in functional areas: you can find projects that add commands to the bazaar system (ex. bzr-tools, bzr-rewrite), you can find projects that add user interface using a flavor of UI Toolkits, you can find projects that add integration between bazaar and IDEs. Eventually you can find projects that are used to supporting the whole environment: documentation generation, script installers and so on.
+
 
 I Like a lot this project organization: all the aspects of the whole environment has been kept granular. When you start digging in the code you concentrate on the abstractions provided by bzrlib (which by the way is a complex project). After you have figured out how it behaves you can start reading projects that you need or that you are interested. 
 
-h3. Now just a test
 
-Here is a bullet list:
-
-* Bullet one. You can
-
-* Bullet two. You can again
-
-
-And now show me some code:
-
-<pre>
-	for each value do:
-		print
-	
-</pre>
-
-again another
