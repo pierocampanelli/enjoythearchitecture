@@ -1,0 +1,34 @@
+body {
+  background-color: white;
+  *font-size: medium;
+  text-align: justify;
+}
+
+#content {
+  margin-right: 10px;
+}
+
+#search {
+	text-align: right;
+}
+
+#sidebar {
+}
+.post p  {
+}
+
+
+.post img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+	width: 600px;
+	height: 400px;
+ }
+
+#sidebar_block_menu {
+
+}
+
+
+
