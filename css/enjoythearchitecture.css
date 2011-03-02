@@ -1,10 +1,74 @@
 body {
   background-color: white;
   text-align: justify;
-  font-family: arial, helvetica, sans-serif;
+  *font-family: arial, helvetica, sans-serif;
   font-size: 90%;
-  *font: 13.34px helvetica, arial, clean, sans-serif;
+  *font: 14px helvetica, arial, clean, sans-serif;
 line-height: 1.5em;
+}
+
+#header {
+	margin-top: 15px;
+}
+
+#footer {
+	font-family: 'Times New Roman', Palatino, serif;
+	font-size: 11px;
+	text-transform: uppercase;
+	color: #999;
+}
+
+#sidebar_block_about {
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+#sidebar_block_about h1 {
+	*font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif;
+	font-weight: bold;
+	
+	font-family: arial, helvetica, sans-serif;
+	font-size: 120%;
+	text-transform: uppercase;
+	font-weight: bold;
+	margin-bottom: 10px;
+	color: #444;
+}
+
+#sidebar_block_about p {
+	text-align: left;
+	padding-top: 0px;
+	margin-top: 0px;
+	*font-family: Georgia, 'Times New Roman', serif;
+	font-family: arial, helvetica, sans-serif;
+	font-size: 90%
+}
+
+#sidebar_block_menu {
+	text-align: left;
+	font-family: arial, helvetica, sans-serif;
+	font-size: 90%
+}
+
+
+#sidebar_block_menu ul {
+	list-style-type: none;
+	margin-left: 0px;
+	padding-left: 10px;
+}
+
+#sidebar_block_icons  {
+	color: #666;
+	font-size: 11px;
+	padding-left: 10px;
+}
+
+
+.logo {
+	margin-left: 10px;
+	margin-bottom: 0px;
+	float: right;
 }
 
 #content {
@@ -16,29 +80,32 @@ line-height: 1.5em;
 }
 
 #sidebar {
-	background-color: #DCF0EA;
+	*background-color: #DCF0EA;
 }
 .post p  {
 }
 
 .post h1 {
 	font-weight: bold;
-	font-size: 18px;
+	font-size: 150%;
 }
 
-.post img {
-    *display: block;
-    *margin-left: auto;
-    *margin-right: auto;
-margin: 0 0 15px 15px;
-float: right;
+.diagram {
+	float:none;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 	max-width: 700px;
-
  }
 
-#sidebar_block_menu {
-
+.searchbox {
+	font-size: 90%;
+	font-family: Trebuchet MS,Liberation Sans,DejaVu Sans,sans-serif;
+	border: 1px solid #999;
+	padding: 3px;
+	*border: none;
+	border-left: 1px solid #CCC;
+	border-top: 1px solid #CCC;
 }
-
 
 
