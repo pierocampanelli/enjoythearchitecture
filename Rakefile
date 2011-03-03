@@ -28,7 +28,7 @@ title: Tags
 
     categories.reverse.each do |category, posts|
       html << <<-HTML
-      <h3 id="#{category}">&rarr; #{category} (#{posts.length})</h3>
+      <h1 class="category">&rarr; #{category} (#{posts.length})</h1>
       HTML
  
       html << '<ul class="posts">'

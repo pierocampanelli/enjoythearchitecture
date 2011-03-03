@@ -3,6 +3,7 @@ body {
   text-align: justify;
   *font-family: arial, helvetica, sans-serif;
   font-size: 90%;
+font-family: Georgia, 'Times New Roman', serif;
   *font: 14px helvetica, arial, clean, sans-serif;
 line-height: 1.5em;
 }
@@ -52,16 +53,24 @@ line-height: 1.5em;
 }
 
 
+
 #sidebar_block_menu ul {
 	list-style-type: none;
 	margin-left: 0px;
 	padding-left: 10px;
 }
 
-#sidebar_block_icons  {
+#sidebar_block_icons a {
+	text-decoration: none;
 	color: #666;
 	font-size: 11px;
 	padding-left: 10px;
+}
+
+
+#sidebar_block_icons p {
+	margin-bottom: 2px;
+	padding-top: 0px;
 }
 
 
@@ -87,7 +96,7 @@ line-height: 1.5em;
 
 .post h1 {
 	font-weight: bold;
-	font-size: 150%;
+	font-size: 23px;
 }
 
 .diagram {
@@ -108,4 +117,37 @@ line-height: 1.5em;
 	border-top: 1px solid #CCC;
 }
 
+.versioning {
+	color: #A6A6A6;
+	font-size: 12px;
+}
+
+.home_post_summary p {
+	margin-bottom: 20px;
+}
+
+#home h1 {
+	*font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif;
+	font-weight: bold;
+	
+	font-family: arial, helvetica, sans-serif;
+	font-size: 120%;
+	text-transform: uppercase;
+	font-weight: bold;
+	margin-bottom: 10px;
+	color: #444;	
+}
+
+.category  {
+	*font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif;
+	font-weight: bold;
+	
+	font-family: arial, helvetica, sans-serif;
+	font-size: 120%;
+	text-transform: uppercase;
+	font-weight: bold;
+	margin-bottom: 10px;
+	color: #444;	
+	
+}
 

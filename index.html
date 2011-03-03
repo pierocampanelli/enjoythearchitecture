@@ -3,12 +3,18 @@ layout: default
 title: Enjoy the Architecture
 ---
 
-<div id="home">
-  <h3>Recent posts</h3>
 
-  <ul class="posts">
+<div id="home">
+ <p>Welcome to enjoyTheArchitecture.com. In this website I try to study the architecture and design of the existing systems. There is a lot of code hidden in opensource projects that claims to teach us design solutions, architectural patterns, idioms or naïve application of existing patterns and a set of principles and practices . . .</p>
+
+<p><b>Warning: site is new and still under construction </b></p>
+
+  <h1>Recent articles</h1>
+
+  <ul class="home_post_summary">
     {% for post in site.posts %}
       <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></li>
+	<p>{{ post.summary }} <a href="{{ site.baseurl}}{{ post.url}}">Read more . . . </a></p>
     {% endfor %}
   </ul>
 

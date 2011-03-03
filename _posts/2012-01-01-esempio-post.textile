@@ -2,11 +2,11 @@
 layout: post
 title: Sample Title
 category: test
+summary: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec molestie, risus at imperdiet imperdiet, est erat fermentum nisi, at cursus leo urna sed diam. Etiam eget felis sit amet turpis tincidunt facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Morbi cursus ullamcorper metus, sed aliquam est sodales at. Nulla facilisi.
 ---
 
 h1. {{ page.title }}
 
-p(meta). 18 Oct 2008 - San Francisco
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec molestie, risus at imperdiet imperdiet, est erat fermentum nisi, at cursus leo urna sed diam. Etiam eget felis sit amet turpis tincidunt facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Morbi cursus ullamcorper metus, sed aliquam est sodales at. Nulla facilisi. Sed ut arcu et turpis laoreet ornare rutrum sed urna. Nullam non lorem a orci rutrum ullamcorper tincidunt vitae felis. In hac habitasse platea dictumst. Pellentesque et fermentum tortor. Mauris a fermentum magna. Mauris sit amet elementum neque. Sed vitae est magna. In dignissim blandit sem, in imperdiet velit pharetra vitae. Duis ac sapien mi, fringilla luctus est.
 
@@ -17,3 +17,7 @@ Sed eget massa at arcu adipiscing porttitor. Aenean consequat odio risus. Sed in
 In hac habitasse platea dictumst. Nunc mauris eros, laoreet ac iaculis sodales, rhoncus nec tortor. Curabitur eu arcu massa, quis gravida felis. Cras placerat hendrerit odio sit amet convallis. Ut a tempus est. Aliquam eget nunc arcu. Sed quis neque in eros tempor venenatis nec id lectus. Nulla facilisi. Aenean ornare vestibulum sem, sit amet vestibulum nibh pretium sed. Nullam laoreet sapien ut justo eleifend lacinia. Phasellus varius orci at neque lobortis quis pharetra nunc scelerisque. Curabitur porta orci et leo adipiscing eu adipiscing nulla iaculis. Vivamus nunc diam, ullamcorper vitae porttitor at, feugiat sed ipsum. Morbi tempor posuere risus non varius.
 
 Cras venenatis magna eu neque pretium venenatis. Fusce nisl urna, hendrerit in bibendum quis, porttitor varius turpis. Nulla dignissim scelerisque ultricies. Maecenas enim nunc, sollicitudin nec sollicitudin a, fringilla a leo. Sed cursus, justo in luctus feugiat, tellus tellus pellentesque lectus, vestibulum consectetur urna urna adipiscing nisi. Quisque quis tincidunt tellus. Nulla mattis, velit ac iaculis accumsan, neque turpis vehicula sapien, hendrerit tristique neque metus a lacus. Nulla dui risus, rhoncus sit amet ullamcorper ut, sagittis vitae dui. Sed eu massa ante. Maecenas sit amet est eros. In hac habitasse platea dictumst. Vivamus vehicula imperdiet purus vel euismod. Mauris eleifend tortor sit amet augue accumsan varius. Sed ullamcorper neque nec ipsum tempor pretium. Cras dapibus, nisi quis viverra dictum, urna justo volutpat enim, eget facilisis turpis libero sed elit.
+
+
+p(versioning). Versioning
+10 oct 2010 - Initial revision
