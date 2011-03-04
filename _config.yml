@@ -3,4 +3,3 @@ pygments: true
 exclude: src/
 permalink: /:title.html
 
-baseurl:     '/enjoythearchitecture'
