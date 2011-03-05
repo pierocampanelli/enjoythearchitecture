@@ -66,6 +66,9 @@
 <!-- ClickTale end of Bottom part -->
 
 <!-- Google Analytics -->
+{% if site.deploy != 'test' %}
+{% include googleanalytics.html %}
+{% endif %}
 <!-- Google Analytics end -->
 
 </body>
