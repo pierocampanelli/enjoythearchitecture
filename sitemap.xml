@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+      <loc>http://www.enjoythearchitecture.com/atom.xml</loc>
+      <lastmod>2011-03-03</lastmod>
+  </url>
+  <url>
+      <loc>http://www.enjoythearchitecture.com/</loc>
+      <lastmod>2011-03-03</lastmod>
+  </url>
+  <url>
+      <loc>http://www.enjoythearchitecture.com/tags.html</loc>
+      <lastmod>2011-03-03</lastmod>
+  </url>
+  <url>
+      <loc>http://www.enjoythearchitecture.com/esempio-post</loc>
+      <lastmod>2012-01-01</lastmod>
+  </url>
+  <url>
+      <loc>http://www.enjoythearchitecture.com/drupal-architecture</loc>
+      <lastmod>2011-02-28</lastmod>
+  </url>
+  <url>
+      <loc>http://www.enjoythearchitecture.com/bazaar-architecture</loc>
+      <lastmod>2011-01-10</lastmod>
+  </url>
+</urlset>
