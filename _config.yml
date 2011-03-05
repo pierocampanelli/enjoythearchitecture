@@ -2,5 +2,5 @@ markdown: rdiscount
 pygments: true
 exclude: src/
 permalink: /:title.html
-#deploy: test
+deploy: test
 
