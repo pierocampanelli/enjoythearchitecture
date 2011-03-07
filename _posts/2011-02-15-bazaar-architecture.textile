@@ -1,0 +1,33 @@
+---
+layout: post
+title: Bazaar
+category: scm
+summary: Bazaar is a version control system that helps you track project history over time and to collaborate easily with others. It is a distributed  in a sense that it allows to work in different ways from disconnected-mode and decentralized to classic centralized mode. In this article I explore the high level architecture of Bazaar focusing in particular to its modular architecture.
+
+---
+
+h1. The architecture of Bazaar distributed version control
+
+!(logo)http://img.freebase.com/api/trans/image_thumb/m/0fh23k?pad=1&errorid=/freebase/no_image_png&maxheight=64&mode=fillcropmid&maxwidth=64! "Bazaar":http://bazaar.canonical.com/ is a version control system that helps you track project history over time and to collaborate easily with others. It is a distributed  in a sense that it allows to work in different ways: from disconnected-mode and decentralized to classic centralized mode. For a quick introduction of bazaar you can see the "wikipedia":http://en.wikipedia.org/wiki/Bazaar_(software) entry and the project "homepage":http://bazaar.canonical.com/en/. Just as an example, "Ubuntu":https://launchpad.net/ubuntu Linux is using Bazaar as its source repository.
+
+Bazaar has been developed in Python with an interesting modular architecture that allows easily to be extended simplifying collaboration and management between developers across the world. "Plugin":http://wiki.bazaar.canonical.com/BzrPlugins is the central abstraction in Bazaar. Each plugin can add new server-side functionalities, new command line tools, new user interfaces and so on. There are several (over **100**) components that have been developed during years and that can be downloaded and added to a standard installation. On project wiki you can find a list of most official implemented "plugins":http://wiki.bazaar.canonical.com/BzrPlugins.
+
+
+"!(diagram)http://farm6.static.flickr.com/5015/5493687577_4853b46876_b.jpg(architecture of bazaar)!":http://farm6.static.flickr.com/5015/5493687577_4853b46876_b.jpg
+
+In the above picture you can see a subset of the project's organization of Bazaar. Each box is a subproject. Central project is **bzrlib**. It defines basic infrastructure, classes and interfaces that can be exploited by other projects. Most of the projects depends from classes defined here. Digging into the code of bzrlib you can find a lot usage of Command design pattern and the concept of server "hooks":http://doc.bazaar.canonical.com/bzr.dev/en/user-guide/hooks.html. There are several "developer's guides":http://doc.bazaar.canonical.com/developers/ that can help to understand design principles and conventions behing development of bzrlib. 
+
+Every new features of Bazaar, from Graphical User Interface to command line, to utility has been modeled as an external project. For example **qbzr** is a cross-platform GUI front end for Bazaar, based on Qt toolkit. It provides GUI frontend for many core bzr commands and several universal dialogs and helper commands. Each cli bzr command has its equivalent on UI prefixed with "q". On top of **qbzr** other projects have been built. For example **qbzr-eclipse** is a plug-in for "Eclipse":http://www.eclipse.org that provides Bazaar version control support by using the QBzr Bazaar plug-in. (__let me note that to reduce cluttering in diagram, I drew only important dependency lines between projects__).
+
+I tried to divide some of the most important projects in functional areas:
+
+* **Commands / Functionalities**: add new commands and utilities to Bazaar
+* **GUI**: add a user interfaces using a flavor of UI Toolkits, 
+* **IDE Tools**: projects that add IDE integration
+* **Support**: projects regarding installers, books, documentations, website and so on
+
+There is a "guide":http://doc.bazaar.canonical.com/plugins/en/plugin-development.html on how to develop new plugins to extend the environment.
+
+Personally I Like this kind of project organization: all the aspects of the whole environment has been kept granular. It is a concrete application of the "Open-Closed":http://en.wikipedia.org/wiki/Open/closed_principle design principle. When you want to modify Bazaar behavior, you write new code using the abstractions provided by __bzrlib__. From program comprehension point of view it applies the "Divide et impera" principle: after having figured out important modules that makes the system, you concentrate on the __bzrlib__ - which by the way is a complex project. After you have understood principal abstractions you can start reading projects that you need to modify/extend or to create.
+
+
