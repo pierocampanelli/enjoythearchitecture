@@ -1,0 +1,80 @@
+---
+layout: post
+title: Drupal  
+category: cms
+summary: Drupal is a free and opensource Content Management System which is used for building Websites. Drupal architecture is highly modular with the goal of simplifying development, collaboration and user contribution. 
+
+---
+
+h1. Drupal architecture - how to implement lously coupled comunication across modules
+
+!(logo)http://ostatic.com/files/images/icon_drupal_image_6.png! "Drupal":http://drupal.org is a free and opensource Content Management System which is used for building Websites. It is based on LAMP Architecture using PHP as implementation language. You can read success stories from the "website":http://drupal.org/success-stories and from the author "Dries Buytaert":http://en.wikipedia.org/wiki/Dries_Buytaert 's personal "blog":http://buytaert.net/tag/drupal-sites. Most of the success of Drupal derives from his modular architecture which simplifies development, collaboration and user contribution. Drupal's history can be read "here":http://www.thewebhostinghero.com/articles/brief-history-of-drupal.html.
+
+Bird's eye view of Drupal architecture can be sketeched by following diagram:
+
+"!(diagram)http://farm6.static.flickr.com/5179/5506367327_087b992006_z.jpg!":http://farm6.static.flickr.com/5179/5506367327_087b992006_z.jpg
+
+At the ground level there is **Drupal API**. It implements the basic functionality of the module system and of the CMS. Physically it is made up by a folder called __includes__/ which contains a set of php files (named with __.inc__ extension). Each of this php file implements an API that can be exploited by upper levels modules.
+**Core** package contains all the Drupal Modules that implement the CMS engines. In this package you can find modules for node management, blogging, commenting, forum, menu and so on. Here is a list of Drupal v7 core modules as they appear on filesystem:
+
+"!(diagram)http://farm6.static.flickr.com/5253/5506934488_dabb149ae5_b.jpg!":http://farm6.static.flickr.com/5253/5506934488_dabb149ae5_b.jpg
+
+
+On top of Core modules there are **Community** Modules. These are modules contributed by the opensource community which are not in the main distribution. For example you can fine modules for Adsense, Amazon integration, Voting and many more ("here":http://drupal.org/project/modules/categories/?filters=drupal_core:103 you can find a complete list of community modules available). 
+At end there are **User** modules which are custom private modules built by developers for implementing specific project's needs. A typical website is deployed using Drupal API and Core modules. 
+
+
+h2. Drupal API
+
+Following diagram reports how drupal API is structured (content of the __/includes__ directory):
+
+"!(diagram)http://farm6.static.flickr.com/5292/5506367507_3eb2dc454f_b.jpg!":http://farm6.static.flickr.com/5292/5506367507_3eb2dc454f_b.jpg
+
+There is an entry point file which is called __index.php__. This is called on every Drupal Request. According the request it includes several __.inc__ files. Every file implements a particular features: for example __database.inc__ exports the API to access database, __module.inc__ the hidden work of the module system, __theme.inc__ implements the theming subsystem and so on. Every __include__ exports a set of constants and functions in the form of:
+
+<pre>
+<?php
+// module sample.inc
+define('SAMPLE_CONSTANT', 'sample value');
+......
+
+function a_method_1($param1, $param2) {
+	// code here ...
+}
+
+function a_method_2() {
+	// code here ...
+}
+
+function a_method_3($input_param1, $input_param2, $input_param3) {
+	// code here
+}
+...................
+...................
+</pre>
+
+As an example this is the code extracted from __includes/bootstrap.inc__:
+
+"!(diagram)http://farm6.static.flickr.com/5015/5506986790_706abfabc1_b.jpg!":http://farm6.static.flickr.com/5015/5506986790_706abfabc1_b.jpg
+
+"Here":http://www.drupalhooked.com/archives/flow-of-drupal you can find a description on how drupal boots and processes each request.
+
+h2. Drupal Modules
+
+A module is a set of PHP and configuration files deployed on a particular folder of Drupal installation. These files follows a particular convention according the following:
+
+"!(diagram)http://farm6.static.flickr.com/5292/5506367687_744f68cf10_b.jpg!":http://farm6.static.flickr.com/5292/5506367687_744f68cf10_b.jpg
+
+each <module> has a
+	
+* **.info** file (example: mymodule.info) which contains version and dependency information about the module
+* **.module** file (example: mymodule.module) which contains PHP code implementing module functionality. Generally module uses Drupal API
+* **.api** file (example: mymodule.api) which contains hooks implemented by module: event to which module is interested
+* **.install** file (example: mymodule.install) which contains code to execute when module is installed/uninstalled
+
+One of the first things I questioned myself is how they implemented lously coupled communication between modules. At an abstract level they used "__Observer/Observable__":http://en.wikipedia.org/wiki/Observer_pattern pattern principally based on a file name convention. Every module notifies a set of internal events which carry out data. These events are called "**Hooks**":http://api.drupal.org/api/drupal/includes--module.inc/group/hooks/7. When a module is interested in an event, it implements a particular method whose name contains the event name plus a prefix, which will be automatically called by the module subsystem. Dynamics is sketched by following diagram:
+
+"!http://farm6.static.flickr.com/5057/5506965318_ebba4dbf2d_b.jpg!":http://farm6.static.flickr.com/5057/5506965318_ebba4dbf2d_b.jpg
+
+When __Module_A__ wants to send an event to other interested modules, it invokes method @invoke_all()@ from Drupal API (file __modules.inc__). @invoke_all@ finds all modules implementing that particular hooks, calling for each a method called @<modulename>_<hookname>(params)@.
+
