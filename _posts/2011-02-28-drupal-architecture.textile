@@ -6,7 +6,7 @@ summary: Drupal is a free and opensource Content Management System which is used
 
 ---
 
-h1. Drupal architecture - how to implement lousy coupled communication across modules
+h1. Drupal architecture - how to implement loosely coupled communication across modules
 
 !(logo)http://ostatic.com/files/images/icon_drupal_image_6.png! "Drupal":http://drupal.org is a free and opensource Content Management System which is used for building Websites. It is based on LAMP Architecture using PHP as implementation language. You can read success stories from the "website":http://drupal.org/success-stories and from the author "Dries Buytaert":http://en.wikipedia.org/wiki/Dries_Buytaert 's personal "blog":http://buytaert.net/tag/drupal-sites. Most of the success of Drupal derives from his modular architecture which simplifies development, collaboration and user contribution. Drupal's history can be read "here":http://www.thewebhostinghero.com/articles/brief-history-of-drupal.html.
 
