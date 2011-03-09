@@ -72,7 +72,7 @@ each <module> has a
 * **.api** file (example: mymodule.api) which contains hooks implemented by module: event to which module is interested
 * **.install** file (example: mymodule.install) which contains code to execute when module is installed/uninstalled
 
-One of the first things I questioned myself is how they implemented lously coupled communication between modules. At an abstract level they used "__Observer/Observable__":http://en.wikipedia.org/wiki/Observer_pattern pattern principally based on a file name convention. Every module notifies a set of internal events which carry out data. These events are called "**Hooks**":http://api.drupal.org/api/drupal/includes--module.inc/group/hooks/7. When a module is interested in an event, it implements a particular method whose name contains the event name plus a prefix, which will be automatically called by the module subsystem. Dynamics is sketched by following diagram:
+One of the first things I questioned myself is how they implemented loosely coupled communication between modules. At an abstract level they used "__Observer/Observable__":http://en.wikipedia.org/wiki/Observer_pattern pattern principally based on a file name convention. Every module notifies a set of internal events which carry out data. These events are called "**Hooks**":http://api.drupal.org/api/drupal/includes--module.inc/group/hooks/7. When a module is interested in an event, it implements a particular method whose name contains the event name plus a prefix, which will be automatically called by the module subsystem. Dynamics is sketched by following diagram:
 
 "!http://farm6.static.flickr.com/5057/5506965318_ebba4dbf2d_b.jpg!":http://farm6.static.flickr.com/5057/5506965318_ebba4dbf2d_b.jpg
 
