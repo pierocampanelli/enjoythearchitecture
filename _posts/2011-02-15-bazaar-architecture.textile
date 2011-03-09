@@ -13,7 +13,7 @@ h1. The architecture of Bazaar distributed version control
 Bazaar has been developed in Python with an interesting modular architecture that allows easily to be extended simplifying collaboration and management between developers across the world. "Plugin":http://wiki.bazaar.canonical.com/BzrPlugins is the central abstraction in Bazaar. Each plugin can add new server-side functionalities, new command line tools, new user interfaces and so on. There are several (over **100**) components that have been developed during years and that can be downloaded and added to a standard installation. On project wiki you can find a list of most official implemented "plugins":http://wiki.bazaar.canonical.com/BzrPlugins.
 
 
-"!(diagram)http://farm6.static.flickr.com/5015/5493687577_4853b46876_b.jpg(architecture of bazaar)!":http://farm6.static.flickr.com/5015/5493687577_4853b46876_b.jpg
+"!(diagram)http://farm6.static.flickr.com/5019/5511331489_3fbe6bda4b_b.jpg(architecture of bazaar)!":http://farm6.static.flickr.com/5019/5511331489_3fbe6bda4b_b.jpg
 
 In the above picture you can see a subset of the project's organization of Bazaar. Each box is a subproject. Central project is **bzrlib**. It defines basic infrastructure, classes and interfaces that can be exploited by other projects. Most of the projects depends from classes defined here. Digging into the code of bzrlib you can find a lot usage of Command design pattern and the concept of server "hooks":http://doc.bazaar.canonical.com/bzr.dev/en/user-guide/hooks.html. There are several "developer's guides":http://doc.bazaar.canonical.com/developers/ that can help to understand design principles and conventions behing development of bzrlib. 
 
