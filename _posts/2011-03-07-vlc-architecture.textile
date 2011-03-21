@@ -1,0 +1,192 @@
+---
+layout: post
+title: VLC Media framework
+category: mediaplayer
+summary: VLC is a free and open source cross-platform multimedia player and framework that plays most multimedia files as well as DVD, Audio CD, VCD, and various streaming protocols. It offers an intuitive API and a modular architecture to easily add support for new codecs, container formats and transmission protocols.
+
+---
+
+h1. The architecture of VLC media framework
+
+!(logo)http://www2.videolan.org/images/vlc64x64.png!"VLC"://www.videolan.org/vlc is a free and open source cross-platform multimedia player and framework that plays most multimedia files as well as DVD, Audio CD, VCD, and various streaming protocols. Technically it is a software package that handles media on a computer and through a network. It offers an intuitive API and a modular architecture to easily add support for new codecs, container formats and transmission protocols. Most known package that comes from VLC is the "player":http://www.videolan.org/vlc/screenshots.html which is commonly used on Windows, Linux and OSX.
+
+According Videolan website, this project is quite complex to understand:
+
+bq. VLC media player is a large and complex piece of software. It also uses a large number of dependencies.
+Being open source allows VLC development to benefit from a large community of developers worldwide. 
+However, entering a project such as VLC media player can be long and complex for new developers.
+
+Code is written by expert C hackers and sometimes it is very hard to understand. Probably a book is needed to explain how VLC works. I'll try in few words to summarize what I found in my mining. Let's start by the highlevel architecture:
+
+"!(diagram)http://farm6.static.flickr.com/5097/5546205248_059c5f45f8_b.jpg!":http://farm6.static.flickr.com/5097/5546205248_059c5f45f8_b.jpg
+
+VLC has a core and a lot of modules (between **200** and **400** depending on the build). VLC cannot do much without modules, since modules provide most of the functionalities you expect. There are following modules:
+
+* **libVLCcore* is the central core of the framework. It provides an "object oriented":http://wiki.videolan.org/Documentation:Hacker%27s_Guide/Object_Management layer to C, module loading/unloading and a set of __abstract__ functionalities regarding multimedia: input, multiplexing, demultiplexing, audio output, video output.
+
+* **modules** provide concrete functionalities of the framework. Modules are categorized according their capabilities. There are modules for __input management__ (file, network, cd), modules for __codecs__ (mp3, divx, ...), modules for __gui__ (textual, web, telnet, qt-based, macosx native).
+
+* **External libraries* As there are lot of modules, there are lot of external dependencies. There is a "page":http://wiki.videolan.org/Contrib_Status on VLC Developer's Wiki that tries to maintains these deps.
+
+* **vlc** (main) - is the main of the player. It initializes libVLC and launch user interface.
+
+h2. Modules
+
+As previously said VLC without modules is useless. Modules can be categorized according their capabilities. A __capability__ should be thought as something similar to an Object Oriented interface. Module loading is simple to explain: when VLC needs a module with a particular capability (for example when it needs a "decoder"), it opens all modules for that capability, until one matches. It opens them in decreasing score order (bigger score first, smaller ones at the end), and runs the <code>Open()</code> function of the module. When one module returns OK, VLC uses this module. You can read further "here":http://wiki.videolan.org/Documentation:VLC_Modules_Loading. Following picture represents principal module capabilities implemented in VLC
+
+"!(diagram)http://farm6.static.flickr.com/5254/5529875761_ebc4fe03b1_b.jpg!":http://farm6.static.flickr.com/5254/5529875761_ebc4fe03b1_b.jpg
+
+
+VLC can have different flavors of user interfaces. Every kind of interface is a module (here you can find a basic sound desing principle: ""separate user logic from user interface"":http://www.martinfowler.com/ieeeSoftware/separation.pdf). In actual distribution there are UIs based on __QT__ for Windows/Linux, on __Cocoa/Objective-C__ for OSX, on __NCurses__ for console UI and one for Maemo device.
+
+Just to have a picture on how modules are physically structured, if you open <code>modules/audio_output</code> directory you find something that looks like
+
+"!(diagram)http://farm2.static.flickr.com/1401/5529875759_98ff9a8ced_b.jpg!":http://farm2.static.flickr.com/1401/5529875759_98ff9a8ced_b.jpg
+
+where there are implementations for several audio output technologies: __ALSA__, __Pulse__ and __OSS__ for Linux, __DirectX__ for Windows 
+
+h2. Object Oriented Layer - VLC Object
+
+VLC defines an Object Oriented Layer which is used to manage models. At the basis there is a VLC Object which is defined as the following:
+
+<pre>
+/*****************************************************************************
+ * The vlc_object_t type. Yes, it's that simple :-)
+ *****************************************************************************/
+/** The main vlc_object_t structure */
+struct vlc_object_t
+{
+    VLC_COMMON_MEMBERS
+};
+</pre>
+
+VLC_COMMON_MEMBERS is a C "#define" coded as the following:
+
+<pre>
+/* VLC_COMMON_MEMBERS : members common to all basic vlc objects */
+#define VLC_COMMON_MEMBERS                                       \
+/** \name VLC_COMMON_MEMBERS                                     \
+ * these members are common for all vlc objects                  \
+ */                                                              \
+/**@{*/                                                          \
+  const char *psz_object_type;                                   \
+	                                                             \
+  /* Messages header */                                          \
+  char *psz_header;                                              \
+  int  i_flags;                                                  \
+	                                                             \
+  /* Object properties */                                        \
+  volatile bool b_die;                /**< set by the outside */ \
+  bool b_force;   /**< set by the outside (eg. module_need()) */ \
+	                                                             \
+  /* Stuff related to the libvlc structure */                    \
+  libvlc_int_t *p_libvlc;         /**< (root of all evil) - 1 */ \
+	                                                             \
+  vlc_object_t *  p_parent;                   /**< our parent */ \
+	                                                             \
+/**@}*/
+</pre>
+
+If you are used to work with Object Oriented Languages you find this structure quite naïve. In __src/misc/objects.c__ there are methods to create, destroy and find  VLC objects: <code>vlc_custom_create(..)</code>, <code>vlc_object_destroy(...)</code>, <code>vlc_object_find(...)</code>. For example this piece of code creates a new vlc object:
+
+<pre>
+p_libvlc = vlc_custom_create( (vlc_object_t *)NULL, 
+			sizeof (*priv),VLC_OBJECT_GENERIC, "libvlc" );
+</pre>
+
+h2. LibVLC instance
+
+Root class of the library is the **libvlc** instance which is defined as:
+
+<pre>
+struct libvlc_instance_t
+{
+  libvlc_int_t *p_libvlc_int;
+  libvlc_vlm_t  libvlc_vlm;
+  unsigned      ref_count;
+  int           verbosity;
+  vlc_mutex_t   instance_lock;
+  struct libvlc_callback_entry_list_t *p_callback_list;
+};
+</pre>
+
+where  <code>libvlc_int_t</code> is a vlc object. During boot it is linked to a <code>libvlc_priv_t</code> type which contains main data and structures of the library. For example <code>playlist_t</code> (__src/playlist/__) is a central abstraction and it represents a music playlist. <code>vlm_t</code> is the root object of the server core that allows streaming of multiple media at the same time. VLC can have different user interfaces (graphical, textual, irc-based, ...). These are modelled by <code>p_intf</code> variable which points to the user interface root object. 
+
+<pre>
+/**
+ * Private LibVLC instance data.
+ */
+typedef struct libvlc_priv_t
+{
+    . . . . . .
+    . . . . . . 
+    bool               playlist_active;
+
+    /* Messages */
+    msg_bank_t        *msg_bank;    ///< The message bank
+
+    /* Singleton objects */
+    module_t          *p_memcpy_module;  ///< Fast memcpy plugin used
+    playlist_t        *p_playlist; //< the playlist singleton
+    vlm_t             *p_vlm;  ///< the VLM singleton (or NULL)
+    vlc_object_t      *p_dialog_provider; ///< dialog provider
+    httpd_t           *p_httpd; ///< HTTP daemon (src/network/httpd.c)
+    . . . . . . 
+    . . . . . .
+
+    /* Interfaces */
+    struct intf_thread_t *p_intf; ///< Interfaces linked-list
+
+} libvlc_priv_t;
+</pre>
+
+h2. Module abstraction and communication
+
+As previously said VLC is made by a large set of modules. On developer's website there is an how-to guide to develop your own module. We can say that a module has to respect two contracts:
+*) from the initialization side it has to implement <code>open()</code> and <code>close()</code> method. These methods are used to initialize/deinitialize module.
+*) from the functionality side it has to implement methods according capabilities.
+
+For example a module of the __audio output__ category has to implement following methods:
+
+<pre>
+..................
+int aout_VolumeDown( vlc_object_t * p_object, int i_nb_steps,audio_volume_t * pi_volume )
+int aout_VolumeUp( vlc_object_t * p_object, int i_nb_steps, audio_volume_t * pi_volume )
+int aout_VolumeGet( vlc_object_t * p_object, audio_volume_t * pi_volume )
+int aout_ToggleMute( vlc_object_t * p_object, audio_volume_t * pi_volume )
+..................
+</pre>
+
+A module from __video output__ category has to implement following methods:
+
+<pre>
+....................
+picture_t *vout_CreatePicture( vout_thread_t *p_vout, bool b_progressive,bool b_top_field_first,
+                               unsigned int i_nb_fields )
+void vout_DisplayPicture( vout_thread_t *p_vout, picture_t *p_pic )
+void DestroyPicture( vout_thread_t *p_vout, picture_t *p_picture )
+void vout_DropPicture( vout_thread_t *p_vout, picture_t *p_pic  )
+....................
+</pre>
+
+There is another fundamental concept in VLC that is build upon the ""Observer-Observable"":http://en.wikipedia.org/wiki/Observer_pattern pattern and that it helps to **decouple** communication between modules. It is the concept of VLC variable. A VLC variable is a value that can be assigned to any VLC object. Interesting thing is that variables can fire __callbacks_ to interested viewers. Let's see how VLC variables work.
+
+You have first to create variable using: <code>var_Create( p_libvlc, name, VLC_VAR_INTEGER );</code>__p_libvlc__ is a pointer to a vlc object, __name__ is variable's name while __VLC_VAR_INTEGER__ is its type. When you want to set a value to that variable you write something like <code>var_SetInteger( p_libvlc, name, temp_value);</code>. __temp_value__ is the value we want to insert. There is a <code>var_getInteger</code> to read value back.
+
+For triggering callbacks there is a <code>var_AddCallback( vlc_object_t *p_this, const char *psz_name,vlc_callback_t pf_callback, void *p_data )</code> where __psz_name__ is the variable name, __pf_callback__ is the function pointer and __p_data__ is a generic data passed to the function pointer as argument. When you change value of a variable a <code>TriggerCallback(..)</code> method is called and all observers of the variable are notified. This is the most complex implementation of _Observer/Observable_ pattern I have seen in life.
+
+How this concept is applied concretely ? If we look at the **"ncurses":http://en.wikipedia.org/wiki/Ncurses** textual user interface of VLC there is a piece of code that states: <code>var_AddCallback( p_playlist, "playlist-item-append", PlaylistChanged, p_intf );</code> 
+This means that when the "playlist-item-append" variable is changed, a <code>PlaylistChanged()</code> callback method is invoked (which is local to the user interface). 
+
+VLC variables is the mechanism used to decouple communication between modules. 
+
+
+h2. Language/Tools Summary
+
+| **Language** | 
+C for core; 
+C++/Objective-C for GUI |
+| **Compiler** | GCC |
+| **Building** | "GNU Autotools":http://www.gnu.org/software/autoconf ; "Buildbot":http://trac.buildbot.net/ |
+| **Testing** | no formal form Unit Testing  |
+| **Documentation** | "Doxygen":http://www.doxygen.org/ |
