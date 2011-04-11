@@ -10,7 +10,11 @@
   </url>
   <url>
       <loc>http://www.enjoythearchitecture.com/tags.html</loc>
-      <lastmod>2011-03-16</lastmod>
+      <lastmod>2011-03-30</lastmod>
+  </url>
+  <url>
+      <loc>http://www.enjoythearchitecture.com/redis-architecture</loc>
+      <lastmod>2011-04-03</lastmod>
   </url>
   <url>
       <loc>http://www.enjoythearchitecture.com/vlc-architecture</loc>

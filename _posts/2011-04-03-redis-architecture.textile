@@ -1,0 +1,201 @@
+---
+layout: post
+title: REDIS Architecture
+category: nosql
+summary: REDIS is an open source, advanced key-value store. It is often referred to as a data structure server since keys can contain strings, hashes, lists, sets and sorted sets. Redis is used in several important products and services such as github, stackoverflow, disqus, guardian and many more.
+
+---
+
+h1. The architecture of REDIS
+
+!(logo)http://redis.io/images/redis.png!"REDIS":http://redis.io is an open source, advanced key-value store. It is often referred to as a data structure server since keys can contain strings, hashes, lists, sets and sorted sets. Redis works with an in-memory dataset. Depending on your use case, you can persist it either by dumping the dataset to disk every once in a while, or by appending each command to a log. You can read more about its features on project's "website":http://redis.io/topics/introduction. Redis's original author is "Salvatore Sanfilippo":http://invece.org/ (awesome work Salvatore !) and on March 15 2010 "VMWare":http://www.vmware.com started "sponsoring":http://antirez.com/post/vmware-the-new-redis-home.html the project. Redis is used in several important products and services such as: "gitHub":https://github.com/blog/530-how-we-made-github-fast, "stackoverflow":http://meta.stackoverflow.com/questions/69164/does-stackoverflow-use-caching-and-if-so-how/69172, "Disqus":http://redis.io/topics/whos-using-redis, "Guardian":http://simonwillison.net/2009/Dec/20/crowdsourcing and many more as you can read from "who is using":http://redis.io/topics/whos-using-redis page. 
+
+Redis is written in ANSI C and works in most POSIX systems like Linux, BSD, OS X and Solaris without external dependencies. From my limited point of view it's code is simple and elegant to read. Codebase is not very big (about 20k LOC for 2.2 release) and its "internals":http://redis.io/topics/internals have been documented well on website. Before going on I invite you to read Redis "Manifesto":http://antirez.com/post/redis-manifesto.html which has been recently written by the author in which he explains philosophy of his development. I quote and I appreciate in particular the following:
+
+bq. We optimize for joy. We believe writing code is a lot of hard work, and the only way it can be worth is by enjoying it. When there is no longer joy in writing code, the best thing to do is stop. To prevent this, we'll avoid taking paths that will make Redis less of a joy to develop.
+
+This article tries to summarize what I have read from docs and code. Redis is a client/server system. A typical __deployment__ diagram is the following:
+
+"!(diagram)http://farm6.static.flickr.com/5306/5576059287_f6182eef18_z.jpg!":http://farm6.static.flickr.com/5306/5576059287_f6182eef18_z.jpg
+
+Redis server is a process that talks a TCP protocol with clients.
+**redis-cli** is the official client while other external projects have implemented bindings for several flavors of languages such as: C++, C#, Clojure, Common Lisp, Erlang, Haskell, Java, JavaScript, Lua, Objective-C, Perl, PHP, Python, R, Ruby, Scala, Go, and Tcl. "Protocol":http://redis.io/topics/protocol is well documented on the website so you can write your own. A Master-Slave replication is also possible if you need.
+
+I designed a **conceptual** modularization of the source code as the following:
+
+"!(diagram)http://farm6.static.flickr.com/5139/5576670118_ef133aca09_b.jpg!":http://farm6.static.flickr.com/5139/5576670118_ef133aca09_b.jpg
+
+* **redis*. is the server daemon. It is made by a single <code>redis.c</code> file which is about 6K LOC.
+* **networking*. code for implementing networking. In particular the event-based logic which can be implemented by __epoll__, __kqueue__ and __select__ system calls
+* **datastructure**. represents important data structures used by server. Crucial is for example <code>sds.c</code> which represents a redis string upon which all the code is written.
+* **redis-cli*. is the command line client 
+
+
+h2. How Redis works
+
+At its roots, Redis is a single-threaded server. This means that a single thread reads incoming connections using an event-based paradigm such as __epoll__, __kqueue__ and __select__. When a specific event occurs on a file descriptor, it processes them and write back responses. This UML sequence diagram shows how a command received by a client is processed internally by Redis:
+
+"!(diagram)http://farm6.static.flickr.com/5147/5595751460_5ae19d94f2_b.jpg!":http://farm6.static.flickr.com/5147/5595751460_5ae19d94f2_b.jpg
+
+
+Redis uses an __home-made__ event library which abstracts low level socket management. Central object is the <code>eventLoop</code> which contains events that has been fired according socket I/O. <code>aeApiPoll(eventLoop)</code> polls all the socket descriptors to see if there is network activity. In the <code>aeProcessEvents()</code> all fired events are checked  and the appropriate handler is invoked. Redis uses a command table to interpret every command from the protocol and to execute an appropriate action. A command table is defined in <code>redis.c</code> as the following:
+
+<pre>
+static struct redisCommand cmdTable[] = {
+   {"get",getCommand,2,REDIS_CMD_INLINE,NULL,1,1,1},
+   {"set",setCommand,3,REDIS_CMD_BULK|REDIS_CMD_DENYOOM,NULL,0,0,0},
+   . . . . . .
+   {"ping",pingCommand,1,REDIS_CMD_INLINE,NULL,0,0,0},
+   {"echo",echoCommand,2,REDIS_CMD_BULK,NULL,0,0,0},
+   {"save",saveCommand,1,REDIS_CMD_INLINE,NULL,0,0,0},
+   . . . . . .
+
+</pre>
+
+second parameter of this structure is the name of the method to invoke. For example a <code>saveCommand()</code> is implemented as the following:
+
+<pre>
+	static void saveCommand(redisClient *c) {
+	    if (server.bgsavechildpid != -1) {
+	        addReplySds(c,sdsnew("-ERR background save in progress\r\n"));
+	        return;
+	    }
+	    if (rdbSave(server.dbfilename) == REDIS_OK) {
+	        addReply(c,shared.ok);
+	    } else {
+	        addReply(c,shared.err);
+	    }
+	}
+</pre>
+
+<code>addReply()</code> is used to push back responses to client.
+
+Just a quick recap on what we have seen:
+
+* Redis uses a single thread that manages synchronously all network connection. A thin event library has been implemented to abstract several unix system calls (epoll, select, kqueue). There is an interesting discussion on "mailinglist":http://groups.google.com/group/redis-db/browse_thread/thread/b52814e9ef15b8d0/ about motivation to use a new event library instead relying on existing opensource such as "libevent":http://monkey.org/~provos/libevent.
+* Requests are managed with commands. Using a command table and according what is read from sockets a command handler is invoked to perform desired action.
+* Fundamental data structure is the <code>SDS</code> string. You can read more "here":http://redis.io/topics/internals-sds
+
+This is the occasion (at least for me) to read "further":http://www.kegel.com/c10k.html about the C10K problem when you develop networked servers. 
+
+h2. Data store management
+
+Redis instance contains global variables the represents state of the server. For example in <code>redis.c</code> there is the following definition:
+
+<pre>
+	/* Global server state structure */
+	struct redisServer {
+	    pthread_t mainthread;
+	    int port;
+	    int fd;
+	    . . . . . .
+</pre>
+
+one of the variables is <code>redisDB</code> which is defined as:
+
+<pre>
+	typedef struct redisDb {
+	    dict *dict;                 /* The keyspace for this DB */
+	    dict *expires;              /* Timeout of keys with a timeout set */
+	    dict *blockingkeys;         /* Keys with clients waiting for data (BLPOP) */
+	    dict *io_keys;              /* Keys with clients waiting for VM I/O */
+	    int id;
+	} redisDb;
+</pre>
+
+<code>dict</code> is the in-memory datastructure that is used to model Redis. It is defined in <code>dict.c</code> and contains a set of methods that you expect when you implement an hashtable such as:
+
+<pre>
+.......
+dict *dictCreate(dictType *type, void *privDataPtr);
+int dictAdd(dict *d, void *key, void *val);
+int dictReplace(dict *d, void *key, void *val);
+int dictDelete(dict *d, const void *key);
+........
+</pre>
+
+and if we see an extract of one of the most important commands - set command - we see:
+
+<pre>
+static void setGenericCommand(redisClient *c, int nx, robj *key, robj *val, robj *expire) {
+. . . . . . . .
+. . . . . . . . 
+retval = dictAdd(c->db->dict,key,val);
+ if (retval == DICT_ERR) {
+     if (!nx) {
+         /* If the key is about a swapped value, we want a new key object
+          * to overwrite the old. So we delete the old key in the database.
+          * This will also make sure that swap pages about the old object
+          * will be marked as free. */
+         if (server.vm_enabled && deleteIfSwapped(c->db,key))
+             incrRefCount(key);
+         dictReplace(c->db->dict,key,val);
+         incrRefCount(val);
+     } else {
+         addReply(c,shared.czero);
+         return;
+     }
+ } else {
+     incrRefCount(key);
+     incrRefCount(val);
+ }
+. . . . . . . .
+. . . . . . . . 
+</pre>
+
+
+h2. How Redis starts
+
+Bootup process is very simple. As previously said redis instance is made by a set of global variables and methods that access them. <code>main()</code> of redis server is:
+
+"!(diagram)http://farm6.static.flickr.com/5224/5595751456_4b25d54f22_b.jpg!":http://farm6.static.flickr.com/5224/5595751456_4b25d54f22_b.jpg
+
+After reading a configuration file, <code>initServer()</code> is called. This method initializes all global variables of redis. In particular it creates a set of linked list useful for management:
+
+<pre>
+......
+server.clients = listCreate();
+server.slaves = listCreate();
+server.monitors = listCreate();
+server.objfreelist = listCreate();
+......
+</pre>
+
+it creates the most important structure:
+
+<pre>
+......
+server.db[j].dict = dictCreate(&dbDictType,NULL);
+server.db[j].expires = dictCreate(&keyptrDictType,NULL);
+server.db[j].blockingkeys = dictCreate(&keylistDictType,NULL);
+......
+</pre>
+
+it initializes the event library creating the eventloop and the server socket. Eventually it enters into the main loop for managing I/O with clients:
+
+<pre>
+	void aeMain(aeEventLoop *eventLoop) {
+	    eventLoop->stop = 0;
+	    while (!eventLoop->stop) {
+	        if (eventLoop->beforesleep != NULL)
+	            eventLoop->beforesleep(eventLoop);
+	        aeProcessEvents(eventLoop, AE_ALL_EVENTS);
+	    }
+	}
+
+</pre>
+
+<code>aeProcessEvents</code> is the method analyzed in previous sections.
+
+h2. Virtual Memory
+
+Redis supports Virtual Memory: this means that when your dataset doesn't fit in RAM, it can be backed on disk. In this  "post":http://antirez.com/post/redis-virtual-memory-story.html of the author's blog there is a discussion regarding design's rational behind virtual memory. There are good sources of documentation on the official documentation page: how VM "works":http://redis.io/topics/virtual-memory and how VM has been "implemented":http://redis.io/topics/internals-vm
+
+
+h2. Language/Tools Summary
+
+| **Language** | C |
+| **Compiler** | GCC |
+| **Building** | GNU Make |
+| **Testing** | no formal form of Unit Testing  |
+| **Documentation** | n/a |
